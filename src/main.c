@@ -73,12 +73,12 @@ int main(int argc, char** argv) {
 
 	/* Parse arguments. */
 	int SCALE = 16;
-	int edgefactor = 16; /* nedges / nvertices, i.e., 2*avg. degree */
+	int64_t edgecount = 16; /* nedges / nvertices, i.e., 2*avg. degree */
 	if (argc >= 2) SCALE = atoi(argv[1]);
-	if (argc >= 3) edgefactor = atoi(argv[2]);
-	if (argc <= 1 || argc >= 4 || SCALE == 0 || edgefactor == 0) {
+	if (argc >= 3) edgecount = atoi(argv[2]);
+	if (argc <= 1 || argc >= 4 || SCALE == 0 || edgecount == 0) {
 		if (rank == 0) {
-			fprintf(stderr, "Usage: %s SCALE edgefactor\n  SCALE = log_2(# vertices) [integer, required]\n  edgefactor = (# edges) / (# vertices) = .5 * (average vertex degree) [integer, defaults to 16]\n(Random number seed and Kronecker initiator are in main.c)\n", argv[0]);
+			fprintf(stderr, "Usage: %s SCALE edgecount\n  SCALE = log_2(# vertices) [integer, required]\n  edgecount = (# edges) [integer, defaults to 16]\n(Random number seed and Kronecker initiator are in main.c)\n", argv[0]);
 		}
 		MPI_Abort(MPI_COMM_WORLD, 1);
 	}
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
 	/* If filename is NULL, store data in memory */
 
 	tuple_graph tg;
-	tg.nglobaledges = (int64_t)(edgefactor) << SCALE;
+	tg.nglobaledges = edgecount;
 	int64_t nglobalverts = (int64_t)(1) << SCALE;
 
 	tg.data_in_file = (filename != NULL);
@@ -468,7 +468,7 @@ int main(int argc, char** argv) {
 			int i;
 			//for (i = 0; i < num_bfs_roots; ++i) printf(" %g \n",edge_counts[i]);
 			fprintf(stdout, "SCALE:                          %d\n", SCALE);
-			fprintf(stdout, "edgefactor:                     %d\n", edgefactor);
+			fprintf(stdout, "edgecount:                      %d\n", edgecount);
 			fprintf(stdout, "NBFS:                           %d\n", num_bfs_roots);
 			fprintf(stdout, "graph_generation:               %g\n", make_graph_time);
 			fprintf(stdout, "num_mpi_processes:              %d\n", size);
